@@ -21,6 +21,10 @@ import com.jobnet.common.i18n.MessageUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -50,8 +54,9 @@ public class JobSeekerService implements IJobSeekerService {
     private final MessageUtil messageUtil;
 
     @Override
+    @Cacheable(value = "jobSeekers", key = "#request", unless = "#result.totalElements == 0")
     public PaginationResponse<List<JobSeekerResponse>> getJobSeekers(JobSeekersGetRequest request){
-        Pageable pageable = PaginationUtil.getPageable(request.getPage(), request.getPageSize(), request.getSortBys());
+        Pageable pageable = PaginationUtil.getPageable(request);
         Query query = new Query();
 
         query.addCriteria(Criteria.where("role").regex("JobSeeker"));
@@ -75,6 +80,7 @@ public class JobSeekerService implements IJobSeekerService {
     }
 
     @Override
+    @Cacheable(value = "jobSeeker", key = "#id")
     public JobSeekerResponse getJobSeekerById(String id) {
         JobSeeker jobSeeker = findByIdOrElseThrow(id);
 
@@ -83,6 +89,7 @@ public class JobSeekerService implements IJobSeekerService {
     }
 
     @Override
+    @CacheEvict(value = "jobSeekers", allEntries = true)
     public VerificationOTP createJobSeeker(JobSeekerRegisterRequest registerRequest) {
         Optional<JobSeeker> optionalJobSeeker = jobSeekerRepository.findByEmail(registerRequest.getEmail());
         if (optionalJobSeeker.isPresent()) {
@@ -111,6 +118,10 @@ public class JobSeekerService implements IJobSeekerService {
     }
 
     @Override
+    @Caching(
+            put = {@CachePut(value = "jobSeeker", key = "#id")},
+            evict = {@CacheEvict(value = "jobSeekers", allEntries = true)}
+    )
     public JobSeekerResponse updateJobSeekerPersonalInfo(String id, JobSeekerPersonalInfo personalInfo) {
         JobSeeker jobSeeker = this.findByIdOrElseThrow(id);
         jobSeeker.setName(personalInfo.getName());
@@ -125,6 +136,10 @@ public class JobSeekerService implements IJobSeekerService {
     }
 
     @Override
+    @Caching(
+            put = {@CachePut(value = "jobSeeker", key = "#id")},
+            evict = {@CacheEvict(value = "jobSeekers", allEntries = true)}
+    )
     public JobSeekerResponse updateJobSeekerProfessionInfo(String id, JobSeekerProfessionInfo professionInfo) {
         JobSeeker jobSeeker = this.findByIdOrElseThrow(id);
         jobSeeker.setSalary(professionInfo.getSalary());
@@ -139,6 +154,10 @@ public class JobSeekerService implements IJobSeekerService {
     }
 
     @Override
+    @Caching(
+            put = {@CachePut(value = "jobSeeker", key = "#id")},
+            evict = {@CacheEvict(value = "jobSeekers", allEntries = true)}
+    )
     public JobSeekerResponse updateJobSeekerBusinessFollowed(String id, JobSeekerBusinessFollowedInfo request) {
         JobSeeker jobSeeker = this.findByIdOrElseThrow(id);
         if(request.getStatus().name().equals(EFollowerAction.FOLLOW.name())){
@@ -157,6 +176,12 @@ public class JobSeekerService implements IJobSeekerService {
     }
     
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "jobSeeker", key = "#id"),
+                    @CacheEvict(value = "jobSeekers", allEntries = true)
+            }
+    )
     public void deleteJobSeekerById(String id, boolean locked) {
         JobSeeker jobSeeker = this.findByIdOrElseThrow(id);
         jobSeeker.setLocked(locked);
@@ -166,6 +191,13 @@ public class JobSeekerService implements IJobSeekerService {
     }
 
     @Override
+    @Caching(
+            put = {@CachePut(value = "jobSeeker", key = "#id")},
+            evict = {
+                    @CacheEvict(value = "jobSeekers", allEntries = true),
+                    @CacheEvict(value = "jobSeekerProfileImage", key = "#id")
+            }
+    )
     public JobSeekerResponse uploadJobSeekerProfileImage(String id, MultipartFile file) {
         JobSeeker jobSeeker = this.findByIdOrElseThrow(id);
 
@@ -183,6 +215,7 @@ public class JobSeekerService implements IJobSeekerService {
     }
 
     @Override
+    @Cacheable(value = "jobSeekerProfileImage", key = "#id")
     public byte[] getJobSeekerProfileImage(String id) {
         JobSeeker jobSeeker = this.findByIdOrElseThrow(id);
 

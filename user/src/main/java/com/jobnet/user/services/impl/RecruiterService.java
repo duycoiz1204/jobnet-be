@@ -23,6 +23,10 @@ import com.jobnet.common.i18n.MessageUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -51,6 +55,7 @@ public class RecruiterService implements IRecruiterService {
     private final MessageUtil messageUtil;
 
     @Override
+    @Cacheable(value = "recruiters", key = "#request", unless = "#result.totalElements == 0")
     public PaginationResponse<List<RecruiterResponse>> getRecruiters(RecruitersGetRequest request) {
         Pageable pageable = PaginationUtil.getPageable(request.getPage(), request.getPageSize(), request.getSortBys());
         Query query = new Query();
@@ -75,6 +80,7 @@ public class RecruiterService implements IRecruiterService {
     }
 
     @Override
+    @Cacheable(value = "recruiter", key = "#id")
     public RecruiterResponse getRecruiterById(String id) {
         Recruiter recruiter = this.findByIdAndRoleOrElseThrow(id);
 
@@ -96,6 +102,7 @@ public class RecruiterService implements IRecruiterService {
     }
 
     @Override
+    @CacheEvict(value = "recruiters", allEntries = true)
     public VerificationOTP createRecruiterWithNewBusiness(RecruiterWithNewBusinessRegisterRequest request) {
         Optional<VerificationOTP> optionalConfirmationOTP =
             this.createConfirmationOTPIfEmailExists(request.getEmail(), request.getPhone());
@@ -123,6 +130,7 @@ public class RecruiterService implements IRecruiterService {
     }
 
     @Override
+    @CacheEvict(value = "recruiters", allEntries = true)
     public VerificationOTP createRecruiterWithSelectedBusiness(RecruiterWithSelectedBusinessRegisterRequest request) {
         Optional<VerificationOTP> optionalConfirmationOTP =
             this.createConfirmationOTPIfEmailExists(request.getEmail(), request.getPhone());
@@ -170,6 +178,10 @@ public class RecruiterService implements IRecruiterService {
     }
 
     @Override
+    @Caching(
+            put = {@CachePut(value = "recruiter", key = "#id")},
+            evict = {@CacheEvict(value = "recruiters", allEntries = true)}
+    )
     public RecruiterResponse updateRecruiterProfile(String id, RecruiterInformation recruiterInformation) {
         Recruiter recruiter = this.findByIdAndRoleOrElseThrow(id);
 
@@ -183,6 +195,10 @@ public class RecruiterService implements IRecruiterService {
     }
 
     @Override
+    @Caching(
+            put = {@CachePut(value = "recruiter", key = "#id")},
+            evict = {@CacheEvict(value = "recruiters", allEntries = true)}
+    )
     public RecruiterResponse updateRecruiterBusinessId(String id, RecruiterBusinessRequest request) {
         Recruiter recruiter = this.findByIdAndRoleOrElseThrow(id);
 
@@ -198,6 +214,12 @@ public class RecruiterService implements IRecruiterService {
     }
 
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "recruiter", key = "#id"),
+                    @CacheEvict(value = "recruiters", allEntries = true)
+            }
+    )
     public void deleteRecruiterById(String id, boolean locked) {
         Recruiter recruiter = this.findByIdAndRoleOrElseThrow(id);
 
@@ -208,6 +230,13 @@ public class RecruiterService implements IRecruiterService {
     }
 
     @Override
+    @Caching(
+            put = {@CachePut(value = "recruiter", key = "#id")},
+            evict = {
+                    @CacheEvict(value = "recruiters", allEntries = true),
+                    @CacheEvict(value = "recruiterProfileImage", key = "#id")
+            }
+    )
     public RecruiterResponse uploadRecruiterProfileImage(String id, MultipartFile file) {
         Recruiter recruiter = this.findByIdAndRoleOrElseThrow(id);
 
@@ -225,6 +254,7 @@ public class RecruiterService implements IRecruiterService {
     }
 
     @Override
+    @Cacheable(value = "recruiterProfileImage", key = "#id")
     public byte[] getRecruiterProfileImage(String id) {
         Recruiter recruiter = findByIdAndRoleOrElseThrow(id);
 

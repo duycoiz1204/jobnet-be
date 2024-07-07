@@ -7,11 +7,12 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan({
-    "com.jobnet.business",
-    "com.jobnet.common.configs",
-    "com.jobnet.common.advice",
-    "com.jobnet.common.s3",
-    "com.jobnet.common.utils"
+        "com.jobnet.business",
+        "com.jobnet.common.configs",
+        "com.jobnet.common.advice",
+        "com.jobnet.common.s3",
+        "com.jobnet.common.utils",
+        "com.jobnet.common.redis"
 })
 @EnableFeignClients("com.jobnet.clients")
 public class BusinessApplication {

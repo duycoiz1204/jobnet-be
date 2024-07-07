@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class PaginationFilter {
+public class PaginationRequest {
 
     @Min(value = 1, message = "{validation.page.min}")
     private Integer page = 1;

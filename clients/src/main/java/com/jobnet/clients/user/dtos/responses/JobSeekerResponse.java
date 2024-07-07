@@ -19,5 +19,4 @@ public class JobSeekerResponse {
     private String gender;
     private LocalDate dateOfBirth;
     private String profileImageId;
-
 }

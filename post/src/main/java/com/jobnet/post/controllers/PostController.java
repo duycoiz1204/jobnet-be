@@ -25,42 +25,8 @@ public class PostController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public PaginationResponse<List<PostResponse>> getPosts(
-        @RequestParam(defaultValue = "1") Integer page,
-        @RequestParam(defaultValue = "10") Integer pageSize,
-        @RequestParam(defaultValue = "createdAt-desc") List<String> sortBy,
-        @RequestParam(required = false) String search,
-        @RequestParam(required = false) String categoryId,
-        @RequestParam(required = false) String professionId,
-        @RequestParam(required = false) BigInteger minSalary,
-        @RequestParam(required = false) BigInteger maxSalary,
-        @RequestParam(required = false) String provinceName,
-        @RequestParam(required = false) String workingFormat,
-        @RequestParam(required = false) String recruiterId,
-        @RequestParam(required = false) String businessId,
-        @RequestParam(required = false) List<String> activeStatus,
-        @RequestParam(required = false) LocalDate fromDate,
-        @RequestParam(required = false) LocalDate toDate,
-        @RequestParam(required = false) Boolean isExpired
-    ) {
-        PaginationResponse<List<PostResponse>> paginationResponse = postService.getPosts(
-            page,
-            pageSize,
-            sortBy,
-            search,
-            categoryId,
-            professionId,
-            minSalary,
-            maxSalary,
-            provinceName,
-            workingFormat,
-            recruiterId,
-            businessId,
-            activeStatus,
-            fromDate,
-            toDate,
-            isExpired
-        );
+    public PaginationResponse<List<PostResponse>> getPosts(@Valid PostsGetRequest request) {
+        PaginationResponse<List<PostResponse>> paginationResponse = postService.getPosts(request);
         log.info("Get posts successfully");
         return paginationResponse;
     }

@@ -7,10 +7,11 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan({
-    "com.jobnet.application",
-    "com.jobnet.common.configs",
-    "com.jobnet.common.advice",
-    "com.jobnet.common.utils"
+        "com.jobnet.application",
+        "com.jobnet.common.configs",
+        "com.jobnet.common.advice",
+        "com.jobnet.common.utils",
+        "com.jobnet.common.redis"
 })
 @EnableFeignClients("com.jobnet.clients")
 public class ApplApplication {

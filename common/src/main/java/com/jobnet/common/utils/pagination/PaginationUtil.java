@@ -21,11 +21,11 @@ public class PaginationUtil {
         );
     }
 
-    public static <T> Pageable getPageable(PaginationFilter filter) {
+    public static <T> Pageable getPageable(PaginationRequest request) {
         return PageRequest.of(
-            filter.getPage() - 1,
-            filter.getPageSize(),
-            MongoUtil.getSort(filter.getSortBys())
+                request.getPage() - 1,
+                request.getPageSize(),
+                MongoUtil.getSort(request.getSortBys())
         );
     }
 

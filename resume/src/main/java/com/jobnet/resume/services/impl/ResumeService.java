@@ -13,6 +13,9 @@ import com.jobnet.resume.repositories.ResumeRepository;
 import com.jobnet.resume.services.IResumeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 
@@ -43,6 +46,7 @@ public class ResumeService implements IResumeService {
     }
 
     @Override
+    @Cacheable(value = "resume", key = "#id", sync = true)
     public ResumeResponse getResumeById(String id) {
         Resume resume = this.findByIdOrElseThrow(id);
         resume.setTotalViews(resume.getTotalViews() + 1);
@@ -51,6 +55,7 @@ public class ResumeService implements IResumeService {
     }
 
     @Override
+    @Cacheable(value = "resumeFile", key = "#id")
     public byte[] getResumeFile(String id) {
         Resume resume = this.findByIdOrElseThrow(id);
         String filePath = s3FilePath.formatted(resume.getJobSeekerId(), resume.getFileId());
@@ -58,6 +63,7 @@ public class ResumeService implements IResumeService {
         log.info("Get resume file by id={}: {}", id, filePath);
         return s3Service.getObject(filePath);
     }
+
     @Override
     public ResumeResponse createResume(String jobSeekerId, FileSaveRequest request) {
         JobSeekerResponse jobSeekerResponse = userClient.getJobSeekerById(jobSeekerId);
@@ -88,7 +94,9 @@ public class ResumeService implements IResumeService {
         log.info("Create resume by auth - jobSeekerID={}, request={}: {}", jobSeekerId, request, resumeResponse);
         return resumeResponse;
     }
+
     @Override
+    @CachePut(value = "resume", key = "#id")
     public ResumeResponse updateResume(String id, ResumeRequest request) {
         Resume resume = this.findByIdOrElseThrow(id);
         resume.setAccessPermission(Resume.EAccessPermission.valueOf(request.getAccessPermission()));
@@ -98,7 +106,9 @@ public class ResumeService implements IResumeService {
         log.info("Update resume by id={}, request={}: {}", id, request, resume);
         return this.getResumeResponse(resume);
     }
+
     @Override
+    @CacheEvict(value = {"resume", "resumeFile"}, key = "#id")
     public void deleteResumeById(String id) {
         Resume resume = this.findByIdOrElseThrow(id);
         String filePath = s3FilePath.formatted(resume.getJobSeekerId(), resume.getFileId());
@@ -106,6 +116,7 @@ public class ResumeService implements IResumeService {
         resumeRepository.deleteById(id);
         log.info("Delete resume by id={}: {}", id, resume);
     }
+
     @Override
     public boolean existsByResumeId(String resumeId){
         return resumeRepository.existsById(resumeId);

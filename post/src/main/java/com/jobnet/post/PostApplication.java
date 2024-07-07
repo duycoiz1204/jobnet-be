@@ -8,13 +8,14 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @ComponentScan({
-    "com.jobnet.post",
-    "com.jobnet.common.configs",
-    "com.jobnet.common.advice",
-    "com.jobnet.common.kafka",
-    "com.jobnet.common.s3",
-    "com.jobnet.common.utils",
-    "com.jobnet.common.i18n",
+        "com.jobnet.post",
+        "com.jobnet.common.configs",
+        "com.jobnet.common.advice",
+        "com.jobnet.common.kafka",
+        "com.jobnet.common.s3",
+        "com.jobnet.common.utils",
+        "com.jobnet.common.i18n",
+        "com.jobnet.common.redis"
 })
 @EnableFeignClients("com.jobnet.clients")
 @EnableScheduling

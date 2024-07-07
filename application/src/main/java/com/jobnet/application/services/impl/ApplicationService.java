@@ -2,7 +2,7 @@ package com.jobnet.application.services.impl;
 
 import com.jobnet.application.dtos.requests.ApplicationCreateRequest;
 import com.jobnet.application.dtos.requests.ApplicationStatusUpdateRequest;
-import com.jobnet.application.dtos.requests.GetApplicationsFilter;
+import com.jobnet.application.dtos.requests.ApplicationsGetRequest;
 import com.jobnet.application.dtos.responses.ApplicationResponse;
 import com.jobnet.application.mappers.ApplicationMapper;
 import com.jobnet.application.models.Application;
@@ -21,6 +21,9 @@ import com.jobnet.common.utils.pagination.PaginationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -50,33 +53,35 @@ public class ApplicationService implements IApplicationService {
         );
 
     @Override
-    public PaginationResponse<List<ApplicationResponse>> getApplications(GetApplicationsFilter filter) {
-        Pageable pageable = PaginationUtil.getPageable(filter);
+    @Cacheable(value = "applications", key = "#request", unless = "#result.totalElements == 0")
+    public PaginationResponse<List<ApplicationResponse>> getApplications(ApplicationsGetRequest request) {
+        Pageable pageable = PaginationUtil.getPageable(request);
         Query query = new Query();
 
-        if (!StringUtils.isBlank(filter.getJobSeekerId()))
-            query.addCriteria(Criteria.where("jobSeekerId").is(filter.getJobSeekerId()));
-        if (!StringUtils.isBlank(filter.getRecruiterId())) {
-            List<String> postIds = postClient.getPostIdsByRecruiterId(filter.getRecruiterId());
+        if (!StringUtils.isBlank(request.getJobSeekerId()))
+            query.addCriteria(Criteria.where("jobSeekerId").is(request.getJobSeekerId()));
+        if (!StringUtils.isBlank(request.getRecruiterId())) {
+            List<String> postIds = postClient.getPostIdsByRecruiterId(request.getRecruiterId());
             query.addCriteria(Criteria.where("postId").in(postIds));
         }
-        if (filter.getApplicationStatus() != null)
-            query.addCriteria(Criteria.where("applicationStatus").is(filter.getApplicationStatus()));
-        if (filter.getApplicationStatuses() != null)
-            query.addCriteria(Criteria.where("applicationStatus").in(filter.getApplicationStatuses()));
-        if (filter.getFromDate() != null)
-            query.addCriteria(Criteria.where("createdAt").gte(filter.getFromDate()));
-        if (filter.getToDate() != null)
-            query.addCriteria(Criteria.where("createdAt").lte(filter.getToDate()));
+        if (request.getApplicationStatus() != null)
+            query.addCriteria(Criteria.where("applicationStatus").is(request.getApplicationStatus()));
+        if (request.getApplicationStatuses() != null)
+            query.addCriteria(Criteria.where("applicationStatus").in(request.getApplicationStatuses()));
+        if (request.getFromDate() != null)
+            query.addCriteria(Criteria.where("createdAt").gte(request.getFromDate()));
+        if (request.getToDate() != null)
+            query.addCriteria(Criteria.where("createdAt").lte(request.getToDate()));
 
         Page<Application> page = PaginationUtil.getPage(mongoTemplate, query, pageable, Application.class);
         PaginationResponse<List<ApplicationResponse>> response =
             PaginationUtil.getPaginationResponse(page, this::getApplicationResponse);
-        log.info("Get applications by auth: filter={}", filter);
+        log.info("Get applications by auth: request={}", request);
         return response;
     }
 
     @Override
+    @Cacheable(value = "application", key = "#id", sync = true)
     public ApplicationResponse getApplicationById(String id) {
         Application application = this.findByIdOrElseThrow(id);
         log.info("Get application by auth: {}", application.toString());
@@ -115,6 +120,7 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
+    @CachePut(value = "application", key = "#id")
     public ApplicationResponse updateApplicationStatus(String id, ApplicationStatusUpdateRequest request) {
         Application application = this.findByIdOrElseThrow(id);
 
@@ -127,6 +133,7 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
+    @CacheEvict(value = "application", key = "#id")
     public void deleteApplicationById(String id) {
         Application application = findByIdOrElseThrow(id);
         postClient.updatePostTotalApplicationsById(application.getPostId(), -1);

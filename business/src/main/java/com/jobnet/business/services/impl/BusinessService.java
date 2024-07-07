@@ -16,6 +16,10 @@ import com.jobnet.common.s3.S3Service;
 import com.jobnet.common.utils.pagination.PaginationUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -41,29 +45,31 @@ public class BusinessService implements IBusinessService {
     private final BusinessMapper businessMapper;
 
     @Override
-    public PaginationResponse<List<BusinessResponse>> getBusinesses(GetBusinessesFilter filter) {
-        Pageable pageable = PaginationUtil.getPageable(filter);
+    @Cacheable(value = "businesses", key = "#request", unless = "#result.totalElements == 0")
+    public PaginationResponse<List<BusinessResponse>> getBusinesses(BusinessesGetRequest request) {
+        Pageable pageable = PaginationUtil.getPageable(request);
         Query query = new Query();
 
-        if (!StringUtils.isBlank(filter.getName()))
-            query.addCriteria(Criteria.where("name").regex(filter.getName(), "i"));
-        if (!StringUtils.isBlank(filter.getEmailDomain()))
-            query.addCriteria(Criteria.where("emailDomain").is(filter.getEmailDomain()));
-        if (!StringUtils.isBlank(filter.getPhone()))
-            query.addCriteria(Criteria.where("phone").regex(filter.getPhone()));
-        if (!StringUtils.isBlank(filter.getStatus()))
-            query.addCriteria(Criteria.where("status").is(filter.getStatus()));
-        if (filter.getIsDeleted() != null)
-            query.addCriteria(Criteria.where("isDeleted").is(filter.getIsDeleted()));
+        if (!StringUtils.isBlank(request.getName()))
+            query.addCriteria(Criteria.where("name").regex(request.getName(), "i"));
+        if (!StringUtils.isBlank(request.getEmailDomain()))
+            query.addCriteria(Criteria.where("emailDomain").is(request.getEmailDomain()));
+        if (!StringUtils.isBlank(request.getPhone()))
+            query.addCriteria(Criteria.where("phone").regex(request.getPhone()));
+        if (!StringUtils.isBlank(request.getStatus()))
+            query.addCriteria(Criteria.where("status").is(request.getStatus()));
+        if (request.getIsDeleted() != null)
+            query.addCriteria(Criteria.where("isDeleted").is(request.getIsDeleted()));
 
         Page<Business> page = PaginationUtil.getPage(mongoTemplate, query, pageable, Business.class);
         PaginationResponse<List<BusinessResponse>> response =
             PaginationUtil.getPaginationResponse(page, this::getBusinessResponse);
-        log.info("Get businesses - filter: {}", filter);
+        log.info("Get businesses - request: {}", request);
         return response;
     }
 
     @Override
+    @Cacheable(value = "business", key = "#id")
     public BusinessResponse getBusinessById(String id) {
         Business business = this.findByIdOrElseThrow(id);
 
@@ -73,6 +79,7 @@ public class BusinessService implements IBusinessService {
     }
 
     @Override
+    @CacheEvict(value = "businesses", allEntries = true)
     public BusinessResponse createBusiness(BusinessRegisterRequest request) {
         if (businessRepository.existsByEmailDomain(request.emailDomain()))
             throw new DataIntegrityViolationException("Email domain is already in use.");
@@ -92,6 +99,10 @@ public class BusinessService implements IBusinessService {
     }
 
     @Override
+    @Caching(
+            put = {@CachePut(value = "business", key = "#id")},
+            evict = {@CacheEvict(value = "businesses", allEntries = true)}
+    )
     public BusinessResponse updateBusinessGeneralInfo(String id, BusinessGeneralInfo request) {
         Business business = this.findByIdOrElseThrow(id);
         business.setName(request.getName());
@@ -107,6 +118,10 @@ public class BusinessService implements IBusinessService {
     }
 
     @Override
+    @Caching(
+            put = {@CachePut(value = "business", key = "#id")},
+            evict = {@CacheEvict(value = "businesses", allEntries = true)}
+    )
     public BusinessResponse updateBusinessIntroductionInfo(String id, BusinessIntroductionInfo request) {
         Business business = this.findByIdOrElseThrow(id);
         business.setDescription(request.getDescription());
@@ -118,6 +133,10 @@ public class BusinessService implements IBusinessService {
     }
 
     @Override
+    @Caching(
+            put = {@CachePut(value = "business", key = "#id")},
+            evict = {@CacheEvict(value = "businesses", allEntries = true)}
+    )
     public BusinessResponse updateBusinessContactInfo(String id, BusinessContactInfo request) {
         Business business = this.findByIdOrElseThrow(id);
         business.setPhone(request.getPhone());
@@ -131,6 +150,10 @@ public class BusinessService implements IBusinessService {
     }
 
     @Override
+    @Caching(
+            put = {@CachePut(value = "business", key = "#id")},
+            evict = {@CacheEvict(value = "businesses", allEntries = true)}
+    )
     public BusinessResponse updateBusinessStatus(String id,StatusUpdateRequest request) {
         Business business = this.findByIdOrElseThrow(id);
         business.setStatus(Business.EStatus.valueOf(request.getStatus()));
@@ -142,6 +165,10 @@ public class BusinessService implements IBusinessService {
     }
 
     @Override
+    @Caching(
+            put = {@CachePut(value = "business", key = "#id")},
+            evict = {@CacheEvict(value = "businesses", allEntries = true)}
+    )
     public BusinessResponse updateBusinessFollowers(String id, BusinessFollower request) {
         Business business = this.findByIdOrElseThrow(id);
         if(request.getStatus().name().equals(EFollowerAction.FOLLOW.name())){
@@ -164,6 +191,12 @@ public class BusinessService implements IBusinessService {
     }
 
     @Override
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "business", key = "#id"),
+                    @CacheEvict(value = "businesses", allEntries = true)
+            }
+    )
     public void deleteBusinessById(String id, boolean isDeleted) {
         Business business = this.findByIdOrElseThrow(id);
         business.setIsDeleted(isDeleted);
@@ -173,6 +206,13 @@ public class BusinessService implements IBusinessService {
     }
 
     @Override
+    @Caching(
+            put = {@CachePut(value = "business", key = "#id")},
+            evict = {
+                    @CacheEvict(value = "businesses", allEntries = true),
+                    @CacheEvict(value = "businessProfileImage", key = "#id")
+            }
+    )
     public BusinessResponse uploadBusinessProfileImage(String id, MultipartFile file) {
         Business business = businessRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Business not found."));
@@ -192,6 +232,7 @@ public class BusinessService implements IBusinessService {
     }
 
     @Override
+    @Cacheable(value = "businessProfileImage", key = "#id")
     public byte[] getBusinessProfileImage(String id) {
         Business business = businessRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Business not found."));
@@ -207,6 +248,13 @@ public class BusinessService implements IBusinessService {
     }
 
     @Override
+    @Caching(
+            put = {@CachePut(value = "business", key = "#id")},
+            evict = {
+                    @CacheEvict(value = "businesses", allEntries = true),
+                    @CacheEvict(value = "businessBackgroundImage", key = "#id")
+            }
+    )
     public BusinessResponse updateBusinessBackgroundImage(String id, MultipartFile file) {
         Business business = this.findByIdOrElseThrow(id);
 
@@ -225,6 +273,7 @@ public class BusinessService implements IBusinessService {
     }
 
     @Override
+    @Cacheable(value = "businessBackgroundImage", key = "#id")
     public byte[] getBusinessBackgroundImage(String id) {
         Business business = this.findByIdOrElseThrow(id);
 

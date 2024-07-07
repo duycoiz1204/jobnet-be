@@ -2,7 +2,7 @@ package com.jobnet.application.controllers;
 
 import com.jobnet.application.dtos.requests.ApplicationCreateRequest;
 import com.jobnet.application.dtos.requests.ApplicationStatusUpdateRequest;
-import com.jobnet.application.dtos.requests.GetApplicationsFilter;
+import com.jobnet.application.dtos.requests.ApplicationsGetRequest;
 import com.jobnet.application.dtos.responses.ApplicationResponse;
 import com.jobnet.application.services.IApplicationService;
 import com.jobnet.common.utils.pagination.PaginationResponse;
@@ -24,7 +24,7 @@ public class ApplicationController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public PaginationResponse<List<ApplicationResponse>> getApplications(GetApplicationsFilter filter) {
+    public PaginationResponse<List<ApplicationResponse>> getApplications(ApplicationsGetRequest filter) {
         PaginationResponse<List<ApplicationResponse>> response = applicationService.getApplications(filter);
         log.info("Get applications by auth successfully");
         return response;

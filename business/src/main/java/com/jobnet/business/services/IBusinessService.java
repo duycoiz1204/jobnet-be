@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface IBusinessService {
 
-    PaginationResponse<List<BusinessResponse>> getBusinesses(GetBusinessesFilter filter);
+    PaginationResponse<List<BusinessResponse>> getBusinesses(BusinessesGetRequest filter);
 
     BusinessResponse getBusinessById(String id);
 

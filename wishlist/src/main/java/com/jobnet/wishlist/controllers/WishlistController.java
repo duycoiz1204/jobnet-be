@@ -1,7 +1,7 @@
 package com.jobnet.wishlist.controllers;
 
 import com.jobnet.common.utils.pagination.PaginationResponse;
-import com.jobnet.wishlist.dtos.requests.GetWishlistsFilter;
+import com.jobnet.wishlist.dtos.requests.WishlistsGetRequest;
 import com.jobnet.wishlist.dtos.requests.WishlistRequest;
 import com.jobnet.wishlist.dtos.responses.WishlistResponse;
 import com.jobnet.wishlist.services.IWishlistService;
@@ -25,7 +25,7 @@ public class WishlistController {
     @ResponseStatus(HttpStatus.OK)
     public PaginationResponse<List<WishlistResponse>> getWishlists(
         @RequestHeader String userId,
-        @Valid GetWishlistsFilter filter
+        @Valid WishlistsGetRequest filter
     ) {
         PaginationResponse<List<WishlistResponse>> response = wishlistService.getWishlistsByUserId(userId, filter);
         log.info("Get wishlists by userId successfully!");

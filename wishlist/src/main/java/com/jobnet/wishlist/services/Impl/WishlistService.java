@@ -6,7 +6,7 @@ import com.jobnet.common.utils.pagination.PaginationResponse;
 import com.jobnet.common.exceptions.DataIntegrityViolationException;
 import com.jobnet.common.exceptions.ResourceNotFoundException;
 import com.jobnet.common.utils.pagination.PaginationUtil;
-import com.jobnet.wishlist.dtos.requests.GetWishlistsFilter;
+import com.jobnet.wishlist.dtos.requests.WishlistsGetRequest;
 import com.jobnet.wishlist.dtos.requests.WishlistRequest;
 import com.jobnet.wishlist.dtos.responses.WishlistResponse;
 import com.jobnet.wishlist.mappers.WishlistMapper;
@@ -15,6 +15,8 @@ import com.jobnet.wishlist.repositories.WishlistRepository;
 import com.jobnet.wishlist.services.IWishlistService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,17 +34,19 @@ public class WishlistService implements IWishlistService {
     private final WishlistMapper wishlistMapper;
 
     @Override
-    public PaginationResponse<List<WishlistResponse>> getWishlistsByUserId(String userId, GetWishlistsFilter filter) {
-        Pageable pageable = PaginationUtil.getPageable(filter);
+    @Cacheable(value = "wishlists", keyGenerator = "wishlistsKeyGenerator", unless = "#result.totalElements == 0")
+    public PaginationResponse<List<WishlistResponse>> getWishlistsByUserId(String userId, WishlistsGetRequest request) {
+        Pageable pageable = PaginationUtil.getPageable(request);
         Page<Wishlist> page = wishlistRepository.findAllByUserId(userId, pageable);
         PaginationResponse<List<WishlistResponse>> response =
             PaginationUtil.getPaginationResponse(page, this::getWishlistResponse);
 
-        log.info("Get wishlist by auth - userId={}, filter={}", userId, filter);
+        log.info("Get wishlist by auth - userId={}, request={}", userId, request);
         return response;
     }
 
     @Override
+    @CacheEvict(value = "wishlists", allEntries = true)
     public WishlistResponse createWishlist(String userId, WishlistRequest wishlistRequest) {
         if (wishlistRepository.existsByUserIdAndPostId(
             userId,
@@ -68,6 +72,7 @@ public class WishlistService implements IWishlistService {
     }
 
     @Override
+    @CacheEvict(value = "wishlists", allEntries = true)
     public void deleteWishlist(String userId, WishlistRequest wishlistRequest) {
 
         if (!wishlistRepository.existsByUserIdAndPostId(

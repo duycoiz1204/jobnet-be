@@ -1,7 +1,7 @@
 package com.jobnet.application.dtos.requests;
 
 import com.jobnet.application.models.Application;
-import com.jobnet.common.utils.pagination.PaginationFilter;
+import com.jobnet.common.utils.pagination.PaginationRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class GetApplicationsFilter extends PaginationFilter {
+public class ApplicationsGetRequest extends PaginationRequest {
 
     private String jobSeekerId;
     private String recruiterId;

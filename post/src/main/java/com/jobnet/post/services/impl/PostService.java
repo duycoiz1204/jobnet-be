@@ -11,6 +11,7 @@ import com.jobnet.common.exceptions.ResourceNotFoundException;
 import com.jobnet.common.s3.S3Service;
 import com.jobnet.common.utils.MongoUtil;
 import com.jobnet.common.utils.pagination.PaginationResponse;
+import com.jobnet.common.utils.pagination.PaginationUtil;
 import com.jobnet.post.dtos.requests.*;
 import com.jobnet.post.dtos.responses.CategoryResponse;
 import com.jobnet.post.dtos.responses.PostResponse;
@@ -24,6 +25,10 @@ import com.jobnet.post.utils.SalaryUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -59,77 +64,53 @@ public class PostService implements IPostService {
 	private final PostMapper postMapper;
 
 	@Override
-	public PaginationResponse<List<PostResponse>> getPosts(
-		Integer page,
-		Integer pageSize,
-		List<String> sortBy,
-		String search,
-		String categoryId,
-		String professionId,
-		BigInteger minSalary,
-		BigInteger maxSalary,
-		String provinceName,
-		String workingFormat,
-		String recruiterId,
-		String businessId,
-		List<String> activeStatus,
-		LocalDate fromDate,
-		LocalDate toDate,
-		Boolean isExpired
-	) {
-		Pageable pageable = PageRequest.of(
-			page - 1,
-			pageSize,
-			MongoUtil.getSort(sortBy)
-		);
+	@Cacheable(value = "posts", key = "#request", unless = "#result.totalElements == 0")
+	public PaginationResponse<List<PostResponse>> getPosts(PostsGetRequest request) {
+		Pageable pageable = PaginationUtil.getPageable(request);
 		Query query = new Query();
 
-		if (!StringUtils.isBlank(search))
-			query.addCriteria(Criteria.where("title").regex(search, "i"));
+		if (!StringUtils.isBlank(request.getSearch()))
+			query.addCriteria(Criteria.where("title").regex(request.getSearch(), "i"));
 //		if (!StringUtils.isBlank(categoryId) && StringUtils.isBlank(professionId))
 //			query.addCriteria(Criteria.where("profession.categoryId").is(categoryId));
-		if (!StringUtils.isBlank(professionId))
-			query.addCriteria(Criteria.where("profession._id").is(professionId));
-		if (minSalary != null)
-			query.addCriteria(Criteria.where("minSalary").gte(minSalary));
-		if (maxSalary != null)
-			query.addCriteria(Criteria.where("maxSalary").lte(maxSalary));
-		if (provinceName != null)
+		if (!StringUtils.isBlank(request.getProfessionId()))
+			query.addCriteria(Criteria.where("profession._id").is(request.getProfessionId()));
+		if (request.getMinSalary() != null)
+			query.addCriteria(Criteria.where("minSalary").gte(request.getMinSalary()));
+		if (request.getMaxSalary() != null)
+			query.addCriteria(Criteria.where("maxSalary").lte(request.getMaxSalary()));
+		if (request.getProvinceName() != null)
 			query.addCriteria(Criteria.where("locations").elemMatch(
-				Criteria.where("provinceCode").is(provinceName))
+				Criteria.where("provinceCode").is(request.getProvinceName()))
 			);
-		if (!StringUtils.isBlank(workingFormat))
-			query.addCriteria(Criteria.where("workingFormat").is(workingFormat));
-		if (!StringUtils.isBlank(recruiterId))
-			query.addCriteria(Criteria.where("recruiterId").is(recruiterId));
-		if (!StringUtils.isBlank(businessId))
-			query.addCriteria(Criteria.where("businessId").is(businessId));
-		if (activeStatus != null)
-			query.addCriteria(Criteria.where("activeStatus").in(activeStatus));
-		if (fromDate != null)
-			query.addCriteria(Criteria.where("createdAt").gte(fromDate));
-		if (toDate != null)
-			query.addCriteria(Criteria.where("createdAt").lte(toDate));
-		if (isExpired != null)
+		if (!StringUtils.isBlank(request.getWorkingFormat()))
+			query.addCriteria(Criteria.where("workingFormat").is(request.getWorkingFormat()));
+		if (!StringUtils.isBlank(request.getRecruiterId()))
+			query.addCriteria(Criteria.where("recruiterId").is(request.getRecruiterId()));
+		if (!StringUtils.isBlank(request.getBusinessId()))
+			query.addCriteria(Criteria.where("businessId").is(request.getBusinessId()));
+		if (request.getActiveStatus() != null)
+			query.addCriteria(Criteria.where("activeStatus").in(request.getActiveStatus()));
+		if (request.getFromDate() != null)
+			query.addCriteria(Criteria.where("createdAt").gte(request.getFromDate()));
+		if (request.getToDate() != null)
+			query.addCriteria(Criteria.where("createdAt").lte(request.getToDate()));
+		if (request.getIsExpired() != null)
 			query.addCriteria(
-				isExpired
-					? Criteria.where("applicationDeadline").lte(LocalDate.now())
-					: Criteria.where("applicationDeadline").gt(LocalDate.now())
+					request.getIsExpired()
+							? Criteria.where("applicationDeadline").lte(LocalDate.now())
+							: Criteria.where("applicationDeadline").gt(LocalDate.now())
 			);
 
-		long count = mongoTemplate.count(query, Post.class);
-		List<Post> posts = mongoTemplate.find(query.with(pageable), Post.class);
-		Page<Post> postPage = PageableExecutionUtils.getPage(
-			posts,
-			pageable,
-			() -> count
-		);
-		PaginationResponse<List<PostResponse>> response = this.getPaginationResponse(postPage);
+		Page<Post> postPage = PaginationUtil.getPage(mongoTemplate, query, pageable, Post.class);
+		PaginationResponse<List<PostResponse>> response =
+				PaginationUtil.getPaginationResponse(postPage, this::getPostResponse);
 		log.info("Get posts: {}", response);
 		return response;
 	}
 
 	@Override
+	@Cacheable(value = "post", key = "#id")
 	public PostResponse getPostById(String id) {
 		Post post = this.findByIdOrElseThrow(id);
 		PostResponse response = this.getPostResponse(post);
@@ -138,6 +119,7 @@ public class PostService implements IPostService {
 	}
 
 	@Override
+	@CacheEvict(value = "posts", allEntries = true)
 	public PostResponse createPost(String userId, PostCreateRequest request) {
 
 		// Check data
@@ -209,6 +191,10 @@ public class PostService implements IPostService {
 	}
 
 	@Override
+	@Caching(
+			put = {@CachePut(value = "post", key = "#id")},
+			evict = {@CacheEvict(value = "posts", allEntries = true)}
+	)
 	public PostResponse updatePostHeadingInfo(String id, PostHeadingInfoUpdateRequest request) {
 		Post post = this.findByIdOrElseThrow(id);
 
@@ -233,6 +219,10 @@ public class PostService implements IPostService {
 	}
 
 	@Override
+	@Caching(
+			put = {@CachePut(value = "post", key = "#id")},
+			evict = {@CacheEvict(value = "posts", allEntries = true)}
+	)
 	public PostResponse updatePostDetailedInfo(String id, PostDetailedInfoUpdateRequest request) {
 		Post post = this.findByIdOrElseThrow(id);
 
@@ -246,6 +236,10 @@ public class PostService implements IPostService {
 	}
 
 	@Override
+	@Caching(
+			put = {@CachePut(value = "post", key = "#id")},
+			evict = {@CacheEvict(value = "posts", allEntries = true)}
+	)
 	public PostResponse updatePostGeneralInfo(String id, PostGeneralInfoUpdateRequest request) {
 		Post post = this.findByIdOrElseThrow(id);
 
@@ -265,6 +259,10 @@ public class PostService implements IPostService {
 	}
 
 	@Override
+	@Caching(
+			put = {@CachePut(value = "post", key = "#id")},
+			evict = {@CacheEvict(value = "posts", allEntries = true)}
+	)
 	public PostResponse updatePostActiveStatus(String id, PostActiveStatusUpdateRequest request) {
 		Post post = this.findByIdOrElseThrow(id);
 
@@ -283,9 +281,8 @@ public class PostService implements IPostService {
 		return response;
 	}
 
-
-
 	@Override
+	@Cacheable(value = "postJd", key = "#id")
 	public byte[] getPostJd(String id) {
 		Post post = this.findByIdOrElseThrow(id);
 
@@ -312,8 +309,6 @@ public class PostService implements IPostService {
 		postRepository.save(post);
 		return this.getPostResponse(post);
 	}
-
-
 
 	private Post findByIdOrElseThrow(String id) {
 		return postRepository.findById(id)
@@ -352,25 +347,6 @@ public class PostService implements IPostService {
 				   .id(businessId)
 				   .name(business.getName())
 				   .profileImageId(business.getProfileImageId())
-				   .build();
-	}
-
-
-	private PaginationResponse<List<PostResponse>> getPaginationResponse(Page<Post> postPage) {
-		long totalElements = postPage.getTotalElements();
-		int totalPages = postPage.getTotalPages();
-		int currentPage = postPage.getNumber() + 1;
-		boolean hasNextPage = postPage.hasNext();
-		List<PostResponse> postResponses = postPage.getContent().stream()
-											   .map(this::getPostResponse)
-											   .toList();
-
-		return PaginationResponse.<List<PostResponse>>builder()
-				   .totalElements(totalElements)
-				   .totalPages(totalPages)
-				   .currentPage(currentPage)
-				   .hasNextPage(hasNextPage)
-				   .data(postResponses)
 				   .build();
 	}
 

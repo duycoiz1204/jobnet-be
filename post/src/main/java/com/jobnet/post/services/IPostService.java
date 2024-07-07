@@ -4,30 +4,11 @@ import com.jobnet.common.utils.pagination.PaginationResponse;
 import com.jobnet.post.dtos.requests.*;
 import com.jobnet.post.dtos.responses.PostResponse;
 
-import java.math.BigInteger;
-import java.time.LocalDate;
 import java.util.List;
 
 public interface IPostService {
 
-    PaginationResponse<List<PostResponse>> getPosts(
-        Integer page,
-        Integer pageSize,
-        List<String> sortBy,
-        String search,
-        String categoryId,
-        String professionId,
-        BigInteger minSalary,
-        BigInteger maxSalary,
-        String provinceName,
-        String workingFormat,
-        String recruiterId,
-        String businessId,
-        List<String> activeStatus,
-        LocalDate fromDate,
-        LocalDate toDate,
-        Boolean isExpired
-    );
+    PaginationResponse<List<PostResponse>> getPosts(PostsGetRequest request);
 
     PostResponse getPostById(String id);
 

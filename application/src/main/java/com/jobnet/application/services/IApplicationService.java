@@ -2,7 +2,7 @@ package com.jobnet.application.services;
 
 import com.jobnet.application.dtos.requests.ApplicationCreateRequest;
 import com.jobnet.application.dtos.requests.ApplicationStatusUpdateRequest;
-import com.jobnet.application.dtos.requests.GetApplicationsFilter;
+import com.jobnet.application.dtos.requests.ApplicationsGetRequest;
 import com.jobnet.application.dtos.responses.ApplicationResponse;
 import com.jobnet.common.utils.pagination.PaginationResponse;
 
@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface IApplicationService {
 
-    PaginationResponse<List<ApplicationResponse>> getApplications(GetApplicationsFilter filter);
+    PaginationResponse<List<ApplicationResponse>> getApplications(ApplicationsGetRequest filter);
 
     ApplicationResponse getApplicationById(String id);
 

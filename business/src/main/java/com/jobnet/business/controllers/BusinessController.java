@@ -26,7 +26,7 @@ public class BusinessController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public PaginationResponse<List<BusinessResponse>> getBusinesses(GetBusinessesFilter filter) {
+    public PaginationResponse<List<BusinessResponse>> getBusinesses(BusinessesGetRequest filter) {
         PaginationResponse<List<BusinessResponse>> response = businessService.getBusinesses(filter);
         log.info("Get business successfully");
         return response;
