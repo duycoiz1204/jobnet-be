@@ -1,6 +1,6 @@
 package com.jobnet.user.models;
 
-import com.jobnet.user.models.enums.*;
+import com.jobnet.common.dtos.ERole;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,13 +27,14 @@ public class Recruiter extends User{
             ERole role,
             Boolean locked,
             Boolean enabled,
+            Boolean upgraded,
             String phone,
             String profileImageId,
             String businessId,
             String nation,
             boolean activeBusiness
     ) {
-        super(id, email, password, name, role, locked, enabled);
+        super(id, email, password, name, role, locked, enabled, upgraded);
         this.phone = phone;
         this.profileImageId = profileImageId;
         this.businessId = businessId;

@@ -1,5 +1,6 @@
 package com.jobnet.user.models;
 
+import com.jobnet.common.dtos.ERole;
 import com.jobnet.common.dtos.LocationRequest;
 import com.jobnet.user.models.enums.*;
 import lombok.*;
@@ -30,7 +31,6 @@ public class JobSeeker extends User {
     private EAccountType accountType;
     private List<String> businessFollowed;
     private int totalBusinessFollowed;
-    
 
     @Builder
     public JobSeeker(
@@ -41,6 +41,7 @@ public class JobSeeker extends User {
             ERole role,
             Boolean locked,
             Boolean enabled,
+            Boolean upgraded,
             EGender gender,
             LocalDate dateOfBirth,
             String phone,
@@ -58,7 +59,7 @@ public class JobSeeker extends User {
             List<String> businessFollowed,
             int totalBusinessFollowed
     ) {
-        super(id, email, password, name, role, locked, enabled);
+        super(id, email, password, name, role, locked, enabled, upgraded);
         this.gender = gender;
         this.dateOfBirth = dateOfBirth;
         this.phone = phone;

@@ -1,5 +1,6 @@
 package com.jobnet.user.dtos.responses;
 
+import com.jobnet.common.dtos.ERole;
 import com.jobnet.common.dtos.LocationRequest;
 import com.jobnet.user.models.enums.*;
 import lombok.*;
@@ -17,6 +18,7 @@ public class JobSeekerResponse {
     private String email;
     private String name;
     private ERole role;
+    private Boolean upgraded;
     private EGender gender;
     private LocalDate dateOfBirth;
     private String phone;

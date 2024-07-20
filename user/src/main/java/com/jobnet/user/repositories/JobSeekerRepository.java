@@ -1,7 +1,7 @@
 package com.jobnet.user.repositories;
 
 import com.jobnet.user.models.JobSeeker;
-import com.jobnet.user.models.enums.ERole;
+import com.jobnet.common.dtos.ERole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;

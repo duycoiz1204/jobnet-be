@@ -1,13 +1,10 @@
 package com.jobnet.user.dtos.responses;
 
 import com.jobnet.user.models.enums.EGender;
-import com.jobnet.user.models.enums.ERole;
+import com.jobnet.common.dtos.ERole;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
-import javax.management.relation.Role;
 import java.time.LocalDate;
-import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor

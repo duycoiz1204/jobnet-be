@@ -15,7 +15,7 @@ import com.jobnet.user.dtos.responses.RecruiterResponse;
 import com.jobnet.user.mappers.RecruiterMapper;
 import com.jobnet.user.models.VerificationOTP;
 import com.jobnet.user.models.Recruiter;
-import com.jobnet.user.models.enums.ERole;
+import com.jobnet.common.dtos.ERole;
 import com.jobnet.user.repositories.RecruiterRepository;
 import com.jobnet.user.services.IVerificationOTPService;
 import com.jobnet.user.services.IRecruiterService;

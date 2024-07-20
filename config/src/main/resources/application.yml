@@ -30,6 +30,7 @@ spring:
             - resume
             - user
             - wishlist
+            - payment
 
   security:
     user:

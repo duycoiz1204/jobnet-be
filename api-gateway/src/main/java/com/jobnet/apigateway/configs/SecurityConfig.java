@@ -92,7 +92,7 @@ public class SecurityConfig {
 
                 .pathMatchers("/api/wishlists/**").hasAuthority("JobSeeker")
                 .pathMatchers("/api/notifications/**").authenticated()
-                .pathMatchers("/api/location/**").permitAll()
+                .pathMatchers("/api/payment/**").hasAuthority("JobSeeker")
             )
             .addFilterAt(jwtAuthFilter, SecurityWebFiltersOrder.AUTHENTICATION);
         return http.build();

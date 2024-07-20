@@ -1,6 +1,6 @@
 package com.jobnet.user.models;
 
-import com.jobnet.user.models.enums.ERole;
+import com.jobnet.common.dtos.ERole;
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -17,4 +17,5 @@ public class User {
     private ERole role;
     private Boolean locked;
     private Boolean enabled;
+    private Boolean upgraded;
 }

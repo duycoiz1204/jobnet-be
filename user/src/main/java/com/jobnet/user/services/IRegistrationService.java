@@ -4,7 +4,7 @@ import com.jobnet.user.dtos.requests.VerificationRequest;
 import com.jobnet.user.dtos.requests.JobSeekerRegisterRequest;
 import com.jobnet.user.dtos.requests.RecruiterWithNewBusinessRegisterRequest;
 import com.jobnet.user.dtos.requests.RecruiterWithSelectedBusinessRegisterRequest;
-import com.jobnet.user.dtos.responses.UserResponse;
+import com.jobnet.common.dtos.UserResponse;
 
 public interface IRegistrationService {
 

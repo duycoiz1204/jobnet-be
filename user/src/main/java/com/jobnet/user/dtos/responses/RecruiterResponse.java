@@ -1,7 +1,7 @@
 package com.jobnet.user.dtos.responses;
 
 import com.jobnet.clients.business.BusinessResponse;
-import com.jobnet.user.models.enums.ERole;
+import com.jobnet.common.dtos.ERole;
 import lombok.*;
 
 @NoArgsConstructor

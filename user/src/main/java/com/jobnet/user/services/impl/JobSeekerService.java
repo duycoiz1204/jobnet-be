@@ -3,6 +3,7 @@ package com.jobnet.user.services.impl;
 import com.jobnet.clients.business.BusinessClient;
 import com.jobnet.common.dtos.BusinessFollower;
 import com.jobnet.common.dtos.EFollowerAction;
+import com.jobnet.common.dtos.ERole;
 import com.jobnet.common.utils.pagination.PaginationResponse;
 import com.jobnet.common.exceptions.DataIntegrityViolationException;
 import com.jobnet.common.exceptions.ResourceNotFoundException;

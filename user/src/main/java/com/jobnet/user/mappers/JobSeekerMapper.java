@@ -24,6 +24,7 @@ public class JobSeekerMapper {
                 .email(jobSeeker.getEmail())
                 .name(jobSeeker.getName())
                 .role(jobSeeker.getRole())
+                .upgraded(jobSeeker.getUpgraded())
                 .gender(jobSeeker.getGender())
                 .dateOfBirth(jobSeeker.getDateOfBirth())
                 .phone(jobSeeker.getPhone())

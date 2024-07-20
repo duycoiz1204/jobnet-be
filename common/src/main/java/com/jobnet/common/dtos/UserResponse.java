@@ -1,6 +1,5 @@
-package com.jobnet.user.dtos.responses;
+package com.jobnet.common.dtos;
 
-import com.jobnet.user.models.enums.ERole;
 import lombok.*;
 
 @NoArgsConstructor
@@ -13,4 +12,5 @@ public class UserResponse {
     private String email;
     private String name;
     private ERole role;
+    private Boolean upgraded;
 }

@@ -1,7 +1,7 @@
 package com.jobnet.user.dtos.requests;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.jobnet.user.models.enums.ERole;
+import com.jobnet.common.dtos.ERole;
 import com.jobnet.user.validations.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

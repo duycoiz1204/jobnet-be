@@ -1,4 +1,4 @@
-package com.jobnet.user.models.enums;
+package com.jobnet.common.dtos;
 
 public enum ERole {
     Admin,

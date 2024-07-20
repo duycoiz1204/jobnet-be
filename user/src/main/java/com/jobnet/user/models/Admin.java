@@ -1,7 +1,7 @@
 package com.jobnet.user.models;
 
 import com.jobnet.user.models.enums.EGender;
-import com.jobnet.user.models.enums.ERole;
+import com.jobnet.common.dtos.ERole;
 import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -26,11 +26,12 @@ public class Admin extends User {
         ERole role,
         Boolean locked,
         Boolean enabled,
+        Boolean upgraded,
         EGender gender,
         String phone,
         LocalDate dateOfBirth
     ) {
-        super(id, email, password, name, role, locked, enabled);
+        super(id, email, password, name, role, locked, enabled, upgraded);
         this.gender = gender;
         this.phone = phone;
         this.dateOfBirth = dateOfBirth;

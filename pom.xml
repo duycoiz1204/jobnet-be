@@ -30,6 +30,7 @@
         <module>common</module>
         <module>notification</module>
         <module>config</module>
+        <module>payment</module>
     </modules>
 
     <properties>
