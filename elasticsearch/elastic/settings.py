@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,7 +27,7 @@ SECRET_KEY = 'django-insecure-7qd*!08*ss64^c)zazw1-9q3(f#di5i%4_zhp9=ob10f=h_r$b
 DEBUG = True
 
 ALLOWED_HOSTS = []
-GOOGLE_GEMINI_API_KEY='AIzaSyAktx2iSZf3kd4cDrzGYQrjeLX-g0snMo8'
+GOOGLE_API_KEY='AIzaSyChBVi68KPbC64ZFmPfA7t1WIkXk6IkE_o'
 # Application definition
 
 INSTALLED_APPS = [
@@ -129,6 +130,6 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
 

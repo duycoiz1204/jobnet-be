@@ -1,7 +1,10 @@
 django == 4.2.5
 djangorestframework == 3.14.0
 langchain
+langsmith
+langchain_google_genai
+langchain-elasticsearch
 elasticsearch
 rank_bm25
-sentence_transformers
 django-cors-headers
+langchain_community
