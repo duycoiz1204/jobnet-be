@@ -20,10 +20,13 @@ public class JobSeeker extends User {
     private String phone;
     private String address;
     private String nation;
+    private String aboutMe;
     private String salary;
     private String workingFormat;
     private String profession;
     private LocationRequest location;
+    private String education;
+    private String socialNetworks;
     private String profileImageId;
     private EVerificationStatus verificationStatus;
     private EJobSearchStatus jobSearchStatus;
@@ -47,10 +50,13 @@ public class JobSeeker extends User {
             String phone,
             String address,
             String nation,
+            String aboutMe,
             String salary,
             String workingFormat,
             String profession,
             LocationRequest location,
+            String education,
+            String socialNetworks,
             String profileImageId,
             EVerificationStatus verificationStatus,
             EJobSearchStatus jobSearchStatus,
@@ -65,10 +71,13 @@ public class JobSeeker extends User {
         this.phone = phone;
         this.address = address;
         this.nation = nation;
+        this.aboutMe = aboutMe;
         this.salary = salary;
         this.workingFormat = workingFormat;
         this.profession = profession;
         this.location = location;
+        this.education = education;
+        this.socialNetworks = socialNetworks;
         this.profileImageId = profileImageId;
         this.verificationStatus = verificationStatus;
         this.jobSearchStatus = jobSearchStatus;

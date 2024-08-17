@@ -14,11 +14,17 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path, include
 from post import urls as post_urls
+from pdfparser import urls as pdfparser_urls
 
 
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/post', include(post_urls)),
+    path('api/pdf-parser', include(pdfparser_urls))
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

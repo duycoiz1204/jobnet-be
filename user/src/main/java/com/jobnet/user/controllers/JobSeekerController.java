@@ -1,10 +1,7 @@
 package com.jobnet.user.controllers;
 
 import com.jobnet.common.utils.pagination.PaginationResponse;
-import com.jobnet.user.dtos.requests.JobSeekerBusinessFollowedInfo;
-import com.jobnet.user.dtos.requests.JobSeekerPersonalInfo;
-import com.jobnet.user.dtos.requests.JobSeekerProfessionInfo;
-import com.jobnet.user.dtos.requests.JobSeekersGetRequest;
+import com.jobnet.user.dtos.requests.*;
 import com.jobnet.user.dtos.responses.JobSeekerResponse;
 import com.jobnet.user.services.IJobSeekerService;
 import jakarta.validation.Valid;
@@ -35,6 +32,15 @@ public class JobSeekerController {
         return jobSeekerService.getJobSeekerById(id);
     }
 
+    @PutMapping("{id}/aboutMe")
+    @ResponseStatus(HttpStatus.OK)
+    public JobSeekerResponse updateJobSeekerAboutMe(
+            @PathVariable String id,
+            @RequestBody @Valid JobSeekerAboutMe jobSeekerAboutMe
+    ) {
+        return jobSeekerService.updateJobSeekerAboutMe(id, jobSeekerAboutMe);
+    }
+
     @PutMapping("{id}/personalInfo")
     @ResponseStatus(HttpStatus.OK)
     public JobSeekerResponse updateJobSeekerPersonalInfo(
@@ -51,6 +57,24 @@ public class JobSeekerController {
         @RequestBody @Valid JobSeekerProfessionInfo professionInfo
     ) {
         return jobSeekerService.updateJobSeekerProfessionInfo(id, professionInfo);
+    }
+
+    @PutMapping("{id}/education")
+    @ResponseStatus(HttpStatus.OK)
+    public JobSeekerResponse updateJobSeekerEducation(
+            @PathVariable String id,
+            @RequestBody @Valid JobSeekerEducation jobSeekerEducation
+    ) {
+        return jobSeekerService.updateJobSeekerEducation(id, jobSeekerEducation);
+    }
+
+    @PutMapping("{id}/socialNetworks")
+    @ResponseStatus(HttpStatus.OK)
+    public JobSeekerResponse updateJobSeekerSocialNetworks(
+            @PathVariable String id,
+            @RequestBody @Valid JobSeekerSocialNetworks jobSeekerSocialNetworks
+    ) {
+        return jobSeekerService.updateJobSeekerSocialNetworks(id, jobSeekerSocialNetworks);
     }
     
     @PutMapping("{id}/follow")

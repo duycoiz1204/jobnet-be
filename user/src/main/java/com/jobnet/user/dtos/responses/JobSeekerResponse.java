@@ -25,9 +25,12 @@ public class JobSeekerResponse {
     private String address;
     private String nation;
     private String salary;
+    private String aboutMe;
     private String workingFormat;
     private String profession;
     private LocationRequest location;
+    private String education;
+    private String socialNetworks;
     private String profileImageId;
     private EVerificationStatus verificationStatus;
     private EJobSearchStatus jobSearchStatus;

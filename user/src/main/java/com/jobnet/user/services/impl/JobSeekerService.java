@@ -123,6 +123,19 @@ public class JobSeekerService implements IJobSeekerService {
             put = {@CachePut(value = "jobSeeker", key = "#id")},
             evict = {@CacheEvict(value = "jobSeekers", allEntries = true)}
     )
+    public JobSeekerResponse updateJobSeekerAboutMe(String id, JobSeekerAboutMe jobSeekerAboutMe) {
+        JobSeeker jobSeeker = this.findByIdOrElseThrow(id);
+        jobSeeker.setAboutMe(jobSeekerAboutMe.getAboutMe());
+
+        jobSeekerRepository.save(jobSeeker);
+        return getJobSeekerResponse(jobSeeker);
+    }
+
+    @Override
+    @Caching(
+            put = {@CachePut(value = "jobSeeker", key = "#id")},
+            evict = {@CacheEvict(value = "jobSeekers", allEntries = true)}
+    )
     public JobSeekerResponse updateJobSeekerPersonalInfo(String id, JobSeekerPersonalInfo personalInfo) {
         JobSeeker jobSeeker = this.findByIdOrElseThrow(id);
         jobSeeker.setName(personalInfo.getName());
@@ -151,6 +164,32 @@ public class JobSeekerService implements IJobSeekerService {
         jobSeekerRepository.save(jobSeeker);
 
         log.info(messageUtil.getMessage("success.update.jobSeeker", id, professionInfo, jobSeeker));
+        return getJobSeekerResponse(jobSeeker);
+    }
+
+    @Override
+    @Caching(
+            put = {@CachePut(value = "jobSeeker", key = "#id")},
+            evict = {@CacheEvict(value = "jobSeekers", allEntries = true)}
+    )
+    public JobSeekerResponse updateJobSeekerEducation(String id, JobSeekerEducation jobSeekerEducation) {
+        JobSeeker jobSeeker = this.findByIdOrElseThrow(id);
+        jobSeeker.setEducation(jobSeekerEducation.getEducation());
+
+        jobSeekerRepository.save(jobSeeker);
+        return getJobSeekerResponse(jobSeeker);
+    }
+
+    @Override
+    @Caching(
+            put = {@CachePut(value = "jobSeeker", key = "#id")},
+            evict = {@CacheEvict(value = "jobSeekers", allEntries = true)}
+    )
+    public JobSeekerResponse updateJobSeekerSocialNetworks(String id, JobSeekerSocialNetworks jobSeekerSocialNetworks) {
+        JobSeeker jobSeeker = this.findByIdOrElseThrow(id);
+        jobSeeker.setSocialNetworks(jobSeekerSocialNetworks.getSocialNetworks());
+
+        jobSeekerRepository.save(jobSeeker);
         return getJobSeekerResponse(jobSeeker);
     }
 

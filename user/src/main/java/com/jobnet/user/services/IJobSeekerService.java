@@ -16,10 +16,16 @@ public interface IJobSeekerService {
 
     VerificationOTP createJobSeeker(JobSeekerRegisterRequest registerRequest);
 
+    JobSeekerResponse updateJobSeekerAboutMe(String id, JobSeekerAboutMe jobSeekerAboutMe);
+
     JobSeekerResponse updateJobSeekerPersonalInfo(String id, JobSeekerPersonalInfo personalInfo);
 
     JobSeekerResponse updateJobSeekerProfessionInfo(String id, JobSeekerProfessionInfo professionInfo);
-    
+
+    JobSeekerResponse updateJobSeekerEducation(String id, JobSeekerEducation jobSeekerEducation);
+
+    JobSeekerResponse updateJobSeekerSocialNetworks(String id, JobSeekerSocialNetworks jobSeekerSocialNetworks);
+
     JobSeekerResponse updateJobSeekerBusinessFollowed(String id, JobSeekerBusinessFollowedInfo businessId);
     
     void deleteJobSeekerById(String id, boolean locked);
