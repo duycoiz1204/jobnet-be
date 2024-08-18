@@ -33,8 +33,9 @@ class PostApiView(APIView):
     def get(self, request, *args, **kwargs):
         results = []
         try:
-            query = request.GET.get("search")
+            query = request.GET.get("search", "")
             id = request.GET.get("id") 
+            categoryId = request.GET.get("categoryId")
             professionId = request.GET.get("professionId")
             professions = request.GET.get("professions")
             minSalary = request.GET.get("minSalary") 
@@ -46,6 +47,8 @@ class PostApiView(APIView):
             filter = []
             if id is not None:
                 filter.append({"term": {"metadata.id": id}})
+            if categoryId is not None:
+                filter.append({"term": {"metadata.category.id": categoryId}})
             if professionId is not None:
                 filter.append({"term": {"metadata.profession.id": professionId}})
             if professions is not None:
@@ -61,7 +64,7 @@ class PostApiView(APIView):
             if workingFormat is not None:
                 filter.append({"match": {"metadata.workingFormat": {"query": workingFormat, "operator": "and"}}})
             if provinceName is not None:
-                filter.append({"term": {"metadata.locations.provinceName": provinceName}})
+                filter.append({"term": { "metadata.locations.provinceName.keyword": provinceName }})
             filter.append({"range": {"metadata.applicationDeadline": {"gte": datetime.now().date()}}})
 
             vector_retriever = self.store.as_retriever(
@@ -99,8 +102,6 @@ class PostApiView(APIView):
         except Exception as error:
             print('Caught this error: ' + repr(error))
         posts = list(map(lambda x: x.metadata, results))
-        for x in posts:
-            print(x["title"], x["profession"]["name"], x["category"]["name"])
         return Response(posts, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
