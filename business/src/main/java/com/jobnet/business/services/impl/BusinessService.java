@@ -220,7 +220,7 @@ public class BusinessService implements IBusinessService {
         String imageId = StringUtils.isBlank(business.getProfileImageId())
             ? UUID.randomUUID().toString()
             : business.getProfileImageId();
-        String filePath = "businesses/%s/%s".formatted(id, imageId);
+        String filePath = "businesses/profile/%s.png".formatted(imageId);
         s3Service.putObject(filePath, file);
 
         business.setProfileImageId(imageId);
@@ -241,7 +241,7 @@ public class BusinessService implements IBusinessService {
         if (StringUtils.isBlank(profileImageId))
             throw new ResourceNotFoundException("Profile image not found.");
 
-        String filePath = "businesses/%s/%s".formatted(id, profileImageId);
+        String filePath = "businesses/profile/%s.png".formatted(profileImageId);
 
         log.info("Get business by auth: {}", business);
         return s3Service.getObject(filePath);
@@ -261,7 +261,7 @@ public class BusinessService implements IBusinessService {
         String imageId = StringUtils.isBlank(business.getBackgroundImageId())
             ? UUID.randomUUID().toString()
             : business.getProfileImageId();
-        String filePath = "businesses/%s/%s".formatted(id, imageId);
+        String filePath = "businesses/background/%s.png".formatted(imageId);
         s3Service.putObject(filePath, file);
 
         business.setBackgroundImageId(imageId);
@@ -281,7 +281,7 @@ public class BusinessService implements IBusinessService {
         if (StringUtils.isBlank(imageId))
             throw new ResourceNotFoundException("Background image not found.");
 
-        String filePath = "businesses/%s/%s".formatted(id, imageId);
+        String filePath = "businesses/background/%s.png".formatted(imageId);
 
         log.info("Get business background image by auth: {}", business);
         return s3Service.getObject(filePath);
