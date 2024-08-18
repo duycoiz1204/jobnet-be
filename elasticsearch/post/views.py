@@ -101,7 +101,7 @@ class PostApiView(APIView):
             results = multi_query_retriever.invoke(query)
         except Exception as error:
             print('Caught this error: ' + repr(error))
-        posts = list(map(lambda x: x.metadata, results))
+        posts = list(map(lambda x: self._format_date_fields(x.metadata), results))
         return Response(posts, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
@@ -160,3 +160,10 @@ class PostApiView(APIView):
                 metadata=data['_source']['metadata']
             ) for data in all_data
         ]
+
+    def _format_date_fields(self, post):
+        date_fields = ['applicationDeadline', 'createdAt']
+        for field in date_fields:
+            if field in post:
+                post[field] = datetime.strptime(post[field], '%Y-%m-%dT%H:%M:%S.%f').strftime('%d/%m/%Y')
+        return post
