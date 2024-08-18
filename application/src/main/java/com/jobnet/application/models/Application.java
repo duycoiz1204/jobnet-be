@@ -26,6 +26,7 @@ public class Application {
         Submitted,
         Reviewed,
         Rejected,
-        Hired
+        Hired,
+        Canceled
     }
 }

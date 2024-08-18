@@ -25,7 +25,7 @@ public class PostResponse {
     private BigDecimal minSalary;
     private String maxSalaryString;
     private BigDecimal maxSalary;
-    private List<Level> levels;
+    private Level level;
     private List<LocationRequest> locations;
     private String workingFormat;
     private List<Benefit> benefits;

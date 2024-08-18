@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -120,7 +121,10 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    @CachePut(value = "application", key = "#id")
+    @Caching(
+            put = {@CachePut(value = "application", key = "#id")},
+            evict = {@CacheEvict(value = "applications", allEntries = true)}
+    )
     public ApplicationResponse updateApplicationStatus(String id, ApplicationStatusUpdateRequest request) {
         Application application = this.findByIdOrElseThrow(id);
 
@@ -133,7 +137,12 @@ public class ApplicationService implements IApplicationService {
     }
 
     @Override
-    @CacheEvict(value = "application", key = "#id")
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "application", key = "#id"),
+                    @CacheEvict(value = "applications", allEntries = true)
+            }
+    )
     public void deleteApplicationById(String id) {
         Application application = findByIdOrElseThrow(id);
         postClient.updatePostTotalApplicationsById(application.getPostId(), -1);
