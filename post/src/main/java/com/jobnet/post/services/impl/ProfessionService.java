@@ -12,6 +12,7 @@ import com.jobnet.post.services.IProfessionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -36,7 +37,7 @@ public class ProfessionService implements IProfessionService {
         if (!StringUtils.isBlank(search))
             query.addCriteria(Criteria.where("name").is(search));
         if (!StringUtils.isBlank(categoryId))
-            query.addCriteria(Criteria.where("categoryId").is(categoryId));
+            query.addCriteria(Criteria.where("categoryId").is(new ObjectId(categoryId)));
 
         List<Profession> professions = mongoTemplate.find(query, Profession.class);
         List<ProfessionResponse> responses = professions.stream()
