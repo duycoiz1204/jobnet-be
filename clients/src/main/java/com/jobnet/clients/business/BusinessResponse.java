@@ -25,7 +25,7 @@ public class BusinessResponse {
     private String emailDomain;
     private String phone;
     private String website;
-    private List<LocationRequest> locations;
+    private List<String> locations;
     private String profileImageId;
     private String backgroundImageId;
     private int totalFollowers;

@@ -1,6 +1,7 @@
 package com.jobnet.user.services.impl;
 
 import com.jobnet.clients.business.BusinessClient;
+import com.jobnet.clients.business.BusinessResponse;
 import com.jobnet.common.dtos.BusinessFollower;
 import com.jobnet.common.dtos.EFollowerAction;
 import com.jobnet.common.dtos.ERole;
@@ -194,10 +195,6 @@ public class JobSeekerService implements IJobSeekerService {
     }
 
     @Override
-    @Caching(
-            put = {@CachePut(value = "jobSeeker", key = "#id")},
-            evict = {@CacheEvict(value = "jobSeekers", allEntries = true)}
-    )
     public JobSeekerResponse updateJobSeekerBusinessFollowed(String id, JobSeekerBusinessFollowedInfo request) {
         JobSeeker jobSeeker = this.findByIdOrElseThrow(id);
         if(request.getStatus().name().equals(EFollowerAction.FOLLOW.name())){
@@ -210,7 +207,7 @@ public class JobSeekerService implements IJobSeekerService {
         }
         jobSeeker.setBusinessFollowed(jobSeeker.getBusinessFollowed());
         jobSeekerRepository.save(jobSeeker);
-        businessClient.updateBusinessFollowers(request.getBusinessId(), new BusinessFollower(request.getStatus(), jobSeeker.getId()));
+        BusinessResponse bs = businessClient.updateBusinessFollowers(request.getBusinessId(), new BusinessFollower(request.getStatus(), jobSeeker.getId()));
         log.info(messageUtil.getMessage("success.update.jobSeeker", id, request, jobSeeker));
         return getJobSeekerResponse(jobSeeker);
     }

@@ -42,6 +42,6 @@
 - Create Dashboard.
     + Navigate to "Home/Dashboard" and click "Create Dashboard"
     + Click on "Import dashboard"
-    + Import dashboard config file -- ".\jobnet-ipj\jobnet-server\grafana\Grafana_Dashboard.json"
+    + Import dashboard config file -- ".\jobnet-be\grafana\Grafana_Dashboard.json"
     + Select Prometheus DataSource - "Prometheus Microservices"
     + Click Import.

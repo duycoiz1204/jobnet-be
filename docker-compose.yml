@@ -98,18 +98,18 @@ services:
     ports:
       - 9200:9200
 
-  config:
-    container_name: config
-    image: arialnguyen/config:latest
-    pull_policy: always
-    ports:
-      - 8888:8888
-    environment:
-      - ENCRYPT_KEY=V6yIDf9SkvjmocEu5dCcCFqs7wznTOyq
-      - CONFIG_GIT_USERNAME=duycoiz1204@gmail.com
-      - CONFIG_GIT_PASSWORD={cipher}053eb0db02cb458d65ff299f7fbfb4d72e9eed960d1b617a9aa96c99f562e28c160d15fd9bcc517cd949a82f5c496019fa82188cba14bc846363b70b577270f6fe13a75c4b6a9bbf0c812e29d8aa56d0923e749a573e36630e6454a20755bcf2de3888a313371b22087d5cce29687d22
-    depends_on:
-      - kafka
+  # config:
+  #   container_name: config
+  #   image: arialnguyen/config:latest
+  #   pull_policy: always
+  #   ports:
+  #     - 8888:8888
+  #   environment:
+  #     - ENCRYPT_KEY=V6yIDf9SkvjmocEu5dCcCFqs7wznTOyq
+  #     - CONFIG_GIT_USERNAME=duycoiz1204@gmail.com
+  #     - CONFIG_GIT_PASSWORD={cipher}053eb0db02cb458d65ff299f7fbfb4d72e9eed960d1b617a9aa96c99f562e28c160d15fd9bcc517cd949a82f5c496019fa82188cba14bc846363b70b577270f6fe13a75c4b6a9bbf0c812e29d8aa56d0923e749a573e36630e6454a20755bcf2de3888a313371b22087d5cce29687d22
+  #   depends_on:
+  #     - kafka
   
   # elasticsearch-service:
   #   image: arialnguyen/business:latest
@@ -126,152 +126,152 @@ services:
   
 
   ## Eureka Server
-  discovery-server:
-    image: arialnguyen/eureka:latest
-    container_name: discovery-server
-    pull_policy: always # pull newest image when run docker-compose command
-    ports:
-      - "8761:8761"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker # Select application file to get env
-    depends_on: # Depends on other service that means wait to check other service start successfull or not. If not it'll not start
-      - zipkin
-      - config
+  # discovery-server:
+  #   image: arialnguyen/eureka:latest
+  #   container_name: discovery-server
+  #   pull_policy: always # pull newest image when run docker-compose command
+  #   ports:
+  #     - "8761:8761"
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=docker # Select application file to get env
+  #   depends_on: # Depends on other service that means wait to check other service start successfull or not. If not it'll not start
+  #     - zipkin
+  #     - config
 
-  api-gateway:
-    image: arialnguyen/api-gateway:latest
-    container_name: api-gateway
-    pull_policy: always
-    ports:
-      - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      - config
-      - zipkin
-      - discovery-server
+  # api-gateway:
+  #   image: arialnguyen/api-gateway:latest
+  #   container_name: api-gateway
+  #   pull_policy: always
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=docker
+  #   depends_on:
+  #     - config
+  #     - zipkin
+  #     - discovery-server
   
-  application-service:
-    image: arialnguyen/application:latest
-    container_name: application-service
-    pull_policy: always
-    ports:
-      - "8086"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      - discovery-server
-      - api-gateway
-      - config
-      - mongo
+  # application-service:
+  #   image: arialnguyen/application:latest
+  #   container_name: application-service
+  #   pull_policy: always
+  #   ports:
+  #     - "8086"
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=docker
+  #   depends_on:
+  #     - discovery-server
+  #     - api-gateway
+  #     - config
+  #     - mongo
       
-  business-service:
-    image: arialnguyen/business:latest
-    container_name: business-service
-    pull_policy: always
-    ports:
-      - "8084"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      - discovery-server
-      - api-gateway
-      - config
-      - mongo
+  # business-service:
+  #   image: arialnguyen/business:latest
+  #   container_name: business-service
+  #   pull_policy: always
+  #   ports:
+  #     - "8084"
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=docker
+  #   depends_on:
+  #     - discovery-server
+  #     - api-gateway
+  #     - config
+  #     - mongo
   
-  location-service:
-    image: arialnguyen/location:latest
-    container_name: location-service
-    pull_policy: always
-    ports:
-      - "8089"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      - discovery-server
-      - api-gateway
-      - config
-      - mongo
+  # location-service:
+  #   image: arialnguyen/location:latest
+  #   container_name: location-service
+  #   pull_policy: always
+  #   ports:
+  #     - "8089"
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=docker
+  #   depends_on:
+  #     - discovery-server
+  #     - api-gateway
+  #     - config
+  #     - mongo
 
-  notification-service:
-    container_name: notification-service
-    image: arialnguyen/notification:latest
-    pull_policy: always
-    ports:
-      - "8088"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      - zipkin
-      - kafka
-      - config
-      - discovery-server
-      - api-gateway
-      - mongo
+  # notification-service:
+  #   container_name: notification-service
+  #   image: arialnguyen/notification:latest
+  #   pull_policy: always
+  #   ports:
+  #     - "8088"
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=docker
+  #   depends_on:
+  #     - zipkin
+  #     - kafka
+  #     - config
+  #     - discovery-server
+  #     - api-gateway
+  #     - mongo
   
-  post-service:
-    container_name: post-service
-    image: arialnguyen/post:latest
-    pull_policy: always
-    ports:
-      - "8083"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      - zipkin
-      - kafka
-      - config
-      - discovery-server
-      - api-gateway
-      - mongo
+  # post-service:
+  #   container_name: post-service
+  #   image: arialnguyen/post:latest
+  #   pull_policy: always
+  #   ports:
+  #     - "8083"
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=docker
+  #   depends_on:
+  #     - zipkin
+  #     - kafka
+  #     - config
+  #     - discovery-server
+  #     - api-gateway
+  #     - mongo
 
-  resume-service:
-    container_name: resume-service
-    image: arialnguyen/resume:latest
-    pull_policy: always
-    ports:
-      - "8085"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      - zipkin
-      - kafka
-      - config
-      - discovery-server
-      - api-gateway
-      - mongo
+  # resume-service:
+  #   container_name: resume-service
+  #   image: arialnguyen/resume:latest
+  #   pull_policy: always
+  #   ports:
+  #     - "8085"
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=docker
+  #   depends_on:
+  #     - zipkin
+  #     - kafka
+  #     - config
+  #     - discovery-server
+  #     - api-gateway
+  #     - mongo
   
-  user-service:
-    container_name: user-service
-    image: arialnguyen/user:latest
-    pull_policy: always
-    ports:
-      - "8082"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      - zipkin
-      - kafka
-      - config
-      - discovery-server
-      - api-gateway
-      - mongo
+  # user-service:
+  #   container_name: user-service
+  #   image: arialnguyen/user:latest
+  #   pull_policy: always
+  #   ports:
+  #     - "8082"
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=docker
+  #   depends_on:
+  #     - zipkin
+  #     - kafka
+  #     - config
+  #     - discovery-server
+  #     - api-gateway
+  #     - mongo
 
-  wishlist-service:
-    container_name: wishlist-service
-    image: arialnguyen/wishlist:latest
-    pull_policy: always
-    ports:
-      - "8087"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    depends_on:
-      - zipkin
-      - kafka
-      - config
-      - discovery-server
-      - api-gateway
-      - mongo
+  # wishlist-service:
+  #   container_name: wishlist-service
+  #   image: arialnguyen/wishlist:latest
+  #   pull_policy: always
+  #   ports:
+  #     - "8087"
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=docker
+  #   depends_on:
+  #     - zipkin
+  #     - kafka
+  #     - config
+  #     - discovery-server
+  #     - api-gateway
+  #     - mongo
 
   ## Prometheus
   prometheus:
@@ -284,15 +284,15 @@ services:
       - ./jobnet-server/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - --config.file=/etc/prometheus/prometheus.yml
-    depends_on: 
-      - application-service
-      - business-service
-      - location-service
-      - notification-service
-      - post-service
-      - resume-service
-      - user-service
-      - wishlist-service
+    # depends_on: 
+    #   - application-service
+    #   - business-service
+    #   - location-service
+    #   - notification-service
+    #   - post-service
+    #   - resume-service
+    #   - user-service
+    #   - wishlist-service
 
   grafana:
     image: grafana/grafana-oss
@@ -307,6 +307,23 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=password
+  
+  # ollama:
+  #   image: arialnguyen/ollama
+  #   container_name: ollama
+  #   # restart: always
+  #   pull_policy: "never"
+  #   ports:
+  #     - "11434:11434"
+  #   volumes:
+  #     - ./jobnet-server/ollama:/var/lib/ollama
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [gpu]
 
     
 
