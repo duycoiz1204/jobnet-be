@@ -64,7 +64,7 @@ public class PostService implements IPostService {
 	private final PostMapper postMapper;
 
 	@Override
-	@Cacheable(value = "posts", key = "#request", unless = "#result.totalElements == 0")
+	@Cacheable(value = "posts", keyGenerator = "postsGetRequestKeyGenerator", unless = "#result.totalElements == 0")
 	public PaginationResponse<List<PostResponse>> getPosts(PostsGetRequest request) {
 		Pageable pageable = PaginationUtil.getPageable(request);
 		Query query = new Query();

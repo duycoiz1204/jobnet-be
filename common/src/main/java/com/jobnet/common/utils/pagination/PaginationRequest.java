@@ -13,10 +13,10 @@ import java.util.List;
 public class PaginationRequest {
 
     @Min(value = 1, message = "{validation.page.min}")
-    private Integer page = 1;
+    protected Integer page = 1;
 
     @Min(value = 1, message = "{validation.pageSize.min}")
-    private Integer pageSize = 10;
+    protected Integer pageSize = 10;
 
-    private List<String> sortBys = List.of("createdAt-desc");
+    protected List<String> sortBys = List.of("createdAt-desc");
 }

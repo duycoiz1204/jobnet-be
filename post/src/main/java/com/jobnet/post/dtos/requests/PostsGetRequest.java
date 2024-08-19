@@ -1,18 +1,21 @@
 package com.jobnet.post.dtos.requests;
 
 import com.jobnet.common.utils.pagination.PaginationRequest;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.cache.interceptor.KeyGenerator;
+import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString(includeFieldNames = true, callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class PostsGetRequest extends PaginationRequest {
 
