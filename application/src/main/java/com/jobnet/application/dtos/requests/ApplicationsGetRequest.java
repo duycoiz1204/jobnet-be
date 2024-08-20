@@ -2,18 +2,16 @@ package com.jobnet.application.dtos.requests;
 
 import com.jobnet.application.models.Application;
 import com.jobnet.common.utils.pagination.PaginationRequest;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
+@ToString(callSuper = true)
 public class ApplicationsGetRequest extends PaginationRequest {
 
     private String jobSeekerId;

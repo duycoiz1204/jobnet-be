@@ -1,15 +1,15 @@
 package com.jobnet.common.utils.pagination;
 
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 public class PaginationRequest {
 
     @Min(value = 1, message = "{validation.page.min}")

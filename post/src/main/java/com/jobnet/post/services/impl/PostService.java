@@ -9,7 +9,6 @@ import com.jobnet.common.dtos.PostElasticResponse;
 import com.jobnet.common.exceptions.DataIntegrityViolationException;
 import com.jobnet.common.exceptions.ResourceNotFoundException;
 import com.jobnet.common.s3.S3Service;
-import com.jobnet.common.utils.MongoUtil;
 import com.jobnet.common.utils.pagination.PaginationResponse;
 import com.jobnet.common.utils.pagination.PaginationUtil;
 import com.jobnet.post.dtos.requests.*;
@@ -30,16 +29,13 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -64,7 +60,7 @@ public class PostService implements IPostService {
 	private final PostMapper postMapper;
 
 	@Override
-	@Cacheable(value = "posts", keyGenerator = "postsGetRequestKeyGenerator", unless = "#result.totalElements == 0")
+	@Cacheable(value = "posts", key = "#request", unless = "#result.totalElements == 0")
 	public PaginationResponse<List<PostResponse>> getPosts(PostsGetRequest request) {
 		Pageable pageable = PaginationUtil.getPageable(request);
 		Query query = new Query();
