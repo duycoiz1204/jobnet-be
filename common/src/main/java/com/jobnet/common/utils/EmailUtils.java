@@ -21,7 +21,7 @@ public class EmailUtils {
         if (email == null || domain == null || email.isEmpty() || domain.isEmpty())
             return false;
 
-        String extractedDomain = extractDomain(email);
+        String extractedDomain = "@" + extractDomain(email);
         return extractedDomain != null && extractedDomain.equalsIgnoreCase(domain);
     }
 }

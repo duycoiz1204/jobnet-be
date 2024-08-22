@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -85,12 +86,32 @@ public class PostService implements IPostService {
 			query.addCriteria(Criteria.where("recruiterId").is(request.getRecruiterId()));
 		if (!StringUtils.isBlank(request.getBusinessId()))
 			query.addCriteria(Criteria.where("businessId").is(request.getBusinessId()));
-		if (request.getActiveStatus() != null)
-			query.addCriteria(Criteria.where("activeStatus").in(request.getActiveStatus()));
-		if (request.getFromDate() != null)
-			query.addCriteria(Criteria.where("createdAt").gte(request.getFromDate()));
-		if (request.getToDate() != null)
-			query.addCriteria(Criteria.where("createdAt").lte(request.getToDate()));
+		if (request.getActiveStatuses() != null || request.getActiveStatus() != null) {
+			Optional<Criteria> optionalCriteria = Optional.of(Criteria.where("activeStatus"))
+					.map(criteria -> {
+						if (request.getActiveStatus() != null)
+							criteria.is(request.getActiveStatus());
+						return criteria;
+					}).map(criteria -> {
+						if (request.getActiveStatuses() != null)
+							criteria.in(request.getActiveStatuses());
+						return criteria;
+					});
+			query.addCriteria(optionalCriteria.get());
+		}
+		if (request.getFromDate() != null || request.getToDate() != null) {
+			Optional<Criteria> optionalCriteria = Optional.of(Criteria.where("createdAt"))
+					.map(criteria -> {
+						if (request.getFromDate() != null)
+							criteria.gte(request.getFromDate());
+						return criteria;
+					}).map(criteria -> {
+						if (request.getToDate() != null)
+							criteria.lte(request.getToDate());
+						return criteria;
+					});
+			query.addCriteria(optionalCriteria.get());
+		}
 		if (request.getIsExpired() != null)
 			query.addCriteria(
 					request.getIsExpired()
