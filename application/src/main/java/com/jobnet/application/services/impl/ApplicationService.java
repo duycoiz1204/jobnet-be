@@ -65,14 +65,34 @@ public class ApplicationService implements IApplicationService {
             List<String> postIds = postClient.getPostIdsByRecruiterId(request.getRecruiterId());
             query.addCriteria(Criteria.where("postId").in(postIds));
         }
-        if (request.getApplicationStatus() != null)
-            query.addCriteria(Criteria.where("applicationStatus").is(request.getApplicationStatus()));
-        if (request.getApplicationStatuses() != null)
-            query.addCriteria(Criteria.where("applicationStatus").in(request.getApplicationStatuses()));
-        if (request.getFromDate() != null)
-            query.addCriteria(Criteria.where("createdAt").gte(request.getFromDate()));
-        if (request.getToDate() != null)
-            query.addCriteria(Criteria.where("createdAt").lte(request.getToDate()));
+        if (request.getApplicationStatus() != null && request.getApplicationStatuses() != null) {
+            Optional<Criteria> optionalCriteria = Optional.of(Criteria.where("applicationStatus"))
+                    .map(criteria -> {
+                        if (request.getApplicationStatus() != null)
+                            criteria.is(request.getApplicationStatus());
+                        return criteria;
+                    })
+                    .map(criteria -> {
+                        if (request.getApplicationStatuses() != null)
+                            criteria.in(request.getApplicationStatuses());
+                        return criteria;
+                    });
+            query.addCriteria(optionalCriteria.get());
+        }
+        if (request.getFromDate() != null && request.getToDate() != null) {
+            Optional<Criteria> optionalCriteria = Optional.of(Criteria.where("createdAt"))
+                    .map(criteria -> {
+                        if (request.getFromDate() != null)
+                            criteria.gte(request.getFromDate());
+                        return criteria;
+                    })
+                    .map(criteria -> {
+                        if (request.getToDate() != null)
+                            criteria.lte(request.getToDate());
+                        return criteria;
+                    });
+            query.addCriteria(optionalCriteria.get());
+        }
 
         Page<Application> page = PaginationUtil.getPage(mongoTemplate, query, pageable, Application.class);
         PaginationResponse<List<ApplicationResponse>> response =
