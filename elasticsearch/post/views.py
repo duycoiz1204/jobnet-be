@@ -17,7 +17,7 @@ from langchain_google_genai import GoogleGenerativeAI, GoogleGenerativeAIEmbeddi
 
 class PostApiView(APIView):
     elastic_url = "http://localhost:9200"
-    elastic_index = "test_post"
+    elastic_index = "post"
     elastic_client = Elasticsearch(elastic_url)
     llm = GoogleGenerativeAI(
         model="gemini-1.5-flash-latest",
@@ -165,5 +165,5 @@ class PostApiView(APIView):
         date_fields = ['applicationDeadline', 'createdAt']
         for field in date_fields:
             if field in post:
-                post[field] = datetime.strptime(post[field], '%Y-%m-%dT%H:%M:%S.%f').strftime('%d/%m/%Y')
+                post[field] = datetime.strptime(post[field], '%Y-%m-%d').strftime('%d/%m/%Y')
         return post
