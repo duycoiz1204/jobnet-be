@@ -32,25 +32,7 @@ services:
     ports:
       - 1080:1080
       - 1025:1025
-  # akhq:
-  #   image: tchiotludo/akhq
-  #   depends_on:
-  #     - kafka
-  #   ports:
-  #     - 8080:8080
-  #   restart: unless-stopped
-  #   environment:
-  #     AKHQ_CONFIGURATION: |
-  #       akhq:
-  #         connections:
-  #           docker-kafka-server:
-  #             properties:
-  #               bootstrap.servers: "kafka:9092"
-  #             schema-registry:
-  #               url: "http://schema-registry:8085"
-  #             connect:
-  #               - name: "connect"
-  #                 url: "http://connect:8083"
+
   zookeeper:
     container_name: zookeeper
     image: confluentinc/cp-zookeeper
@@ -307,25 +289,6 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=password
-  
-  # ollama:
-  #   image: arialnguyen/ollama
-  #   container_name: ollama
-  #   # restart: always
-  #   pull_policy: "never"
-  #   ports:
-  #     - "11434:11434"
-  #   volumes:
-  #     - ./jobnet-server/ollama:/var/lib/ollama
-  #   deploy:
-  #     resources:
-  #       reservations:
-  #         devices:
-  #           - driver: nvidia
-  #             count: 1
-  #             capabilities: [gpu]
-
-    
 
 volumes:
   mongo: {}
