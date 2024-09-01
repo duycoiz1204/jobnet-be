@@ -65,7 +65,7 @@ public class ApplicationService implements IApplicationService {
             List<String> postIds = postClient.getPostIdsByRecruiterId(request.getRecruiterId());
             query.addCriteria(Criteria.where("postId").in(postIds));
         }
-        if (request.getApplicationStatus() != null && request.getApplicationStatuses() != null) {
+        if (request.getApplicationStatus() != null || request.getApplicationStatuses() != null) {
             Optional<Criteria> optionalCriteria = Optional.of(Criteria.where("applicationStatus"))
                     .map(criteria -> {
                         if (request.getApplicationStatus() != null)
@@ -79,7 +79,7 @@ public class ApplicationService implements IApplicationService {
                     });
             query.addCriteria(optionalCriteria.get());
         }
-        if (request.getFromDate() != null && request.getToDate() != null) {
+        if (request.getFromDate() != null || request.getToDate() != null) {
             Optional<Criteria> optionalCriteria = Optional.of(Criteria.where("createdAt"))
                     .map(criteria -> {
                         if (request.getFromDate() != null)

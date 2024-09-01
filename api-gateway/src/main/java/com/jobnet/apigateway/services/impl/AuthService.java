@@ -34,8 +34,8 @@ public class AuthService implements IAuthService {
                 if (!isUserValid(userDetails, authRequest))
                     throw new BadCredentialsException("Username or password does not match.");
 
-                String accessToken = jwtUtils.generateToken(userDetails, TimeUnit.MINUTES.toMillis(10));
-                String refreshToken = jwtUtils.generateToken(userDetails, TimeUnit.DAYS.toMillis(1));
+                String accessToken = jwtUtils.generateToken(userDetails, TimeUnit.DAYS.toMillis(1));
+                String refreshToken = jwtUtils.generateToken(userDetails, TimeUnit.DAYS.toMillis(5));
                 UserResponse user = UserResponse.builder()
                     .id(userDetails.getUser().getId())
                     .email(userDetails.getUser().getEmail())
@@ -66,7 +66,7 @@ public class AuthService implements IAuthService {
                 if (!jwtUtils.isTokenValid(refreshToken, userDetails))
                     throw new BadCredentialsException("Token invalid.");
 
-                String accessToken = jwtUtils.generateToken(userDetails, TimeUnit.MINUTES.toMillis(10));
+                String accessToken = jwtUtils.generateToken(userDetails, TimeUnit.DAYS.toMillis(1));
                 UserResponse user = UserResponse.builder()
                     .id(userDetails.getUser().getId())
                     .email(userDetails.getUser().getEmail())
